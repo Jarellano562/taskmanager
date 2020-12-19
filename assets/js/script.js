@@ -6,6 +6,8 @@ var tasksInProgressEl = document.querySelector("#tasks-in-progress");
 var tasksCompletedEl = document.querySelector("#tasks-completed");
 var pageContentEl = document.querySelector("#page-content");
 
+var tasks = [];
+
 var taskFormHandler = function(event) {
   event.preventDefault();
   var taskNameInput = document.querySelector("input[name='task-name']").value;
@@ -30,8 +32,9 @@ var taskFormHandler = function(event) {
   } else {
     var taskDataObj = {
       name: taskNameInput,
-      type: taskTypeInput
-    };
+      type:taskTypeInput,
+      status: "to do"
+    }
 
     createTaskEl(taskDataObj);
   }
@@ -52,6 +55,10 @@ var createTaskEl = function(taskDataObj) {
   var taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
   tasksToDoEl.appendChild(listItemEl);
+
+  taskDataObj.id = taskIdCounter;
+
+  tasks.push(taskDataObj);
 
   // increase task counter for next unique id
   taskIdCounter++;
@@ -103,7 +110,15 @@ var completeEditTask = function(taskName, taskType, taskId) {
   // set new values
   taskSelected.querySelector("h3.task-name").textContent = taskName;
   taskSelected.querySelector("span.task-type").textContent = taskType;
-
+  debugger
+  // loop through tasks array and task object with new content
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].name = taskName;
+      tasks[i].type = taskType;
+    }
+  };
+  debugger
   alert("Task Updated!");
 
   // remove data attribute from form
@@ -144,6 +159,13 @@ var taskStatusChangeHandler = function(event) {
   } else if (statusValue === "completed") {
     tasksCompletedEl.appendChild(taskSelected);
   }
+  // update task's in tasks array
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].id === parseInt(taskId)) {
+      tasks[i].status = statusValue;
+    }
+  }
+  console.log(tasks);
 };
 
 var editTask = function(taskId) {
@@ -200,6 +222,14 @@ var dropTaskHandler = function(event) {
     default:
       console.log("Something went wrong!");
   }
+    // loop through tasks array to find and update the updated task's status
+    for (var i = 0; i < tasks.length; i++) {
+      if (tasks[i].id === parseInt(id)) {
+        tasks[i].status = statusSelectEl.value.toLowerCase();
+      }
+    }
+
+console.log(tasks);
 
   dropZone.appendChild(draggableElement);
 };
